@@ -11,7 +11,7 @@ def loadImage(path: str) -> Image:
         logging.debug(f'Done reading the image file.')
         return image
     except Exception as e:
-        logging.debug(f'There was an error reading the image file due to {repr(e)}.')
+        logging.debug(f'Error occured while reading image file.')
         raise e
 
 def readYAML(path: str) -> dict:
@@ -22,11 +22,11 @@ def readYAML(path: str) -> dict:
             logging.debug(f'Done reading the YAML file.')
             return data
     except Exception as e:
-        logging.debug(f'There was an error reading the YAML file due to {repr(e)}.')
+        logging.debug(f'Error occured while reading YAML file.')
         raise e
 
 def main():
-    logging.debug(f'Running main body of script')
+    logging.debug(f'Running {__name__}')
     
     try:
         Config = readYAML('config.yaml')
@@ -63,7 +63,7 @@ def main():
             print(row_hex_string)
     
     except Exception as e:
-        logging.error(f'Something went wrong while converting the image into an array due to {repr(e)}.')
+        logging.error(f'Could not generate command due to {repr(e)}')
         exit(1)
     
     logging.info('Done.')
