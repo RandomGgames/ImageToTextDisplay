@@ -25,6 +25,40 @@ def readYAML(path: str) -> dict:
         logging.debug(f'Error occured while reading YAML file.')
         raise e
 
+def generateImageHexArray(image):
+    logging.debug(f'Converting image to hex array...')
+    try:
+        image = image.convert("RGBA")
+        width, height = image.size
+        logging.debug(f'Image size: {width}x{height}')
+        hex_array = [[None] * width for _ in range(height)]
+        for y in range(height):
+            for x in range(width):
+                pixel = image.getpixel((x, y))
+                r, g, b, a = pixel[:4]
+                if a == 0:
+                    hex_array[y][x] = None
+                else:
+                    hex_value = "#{:02X}{:02X}{:02X}".format(r, g, b)
+                    hex_array[y][x] = hex_value
+        logging.debug(f'Done converting image to hex array.')
+        return hex_array
+    except Exception as e:
+        logging.debug(f'Error occured while generating image hex array.')
+        return e
+
+def generateCommand(direction: str, color: str, scale: float):
+    pass
+    #Example command I'm using to generate text:
+    #/summon text_display 0 50.5 -8 {billboard:"vertical",text:'[{"text":"Your goal is to destroy whatever build is in front of you, but you can only use the TNT you are given!","color":"white"}]',transformation:{left_rotation:[0.0f,0.0f,0.0f,1.0f],right_rotation:[0.0f,0.0f,0.0f,1.0f],translation:[0.0f,0.0f,0.0f],scale:[0.5f,0.5f,0.5f]}}
+    
+    #How the command should look roughly
+    #/summon text_display ~ ~ ~ {billboard:"fixed",text:text:'[{"text":"■","color":"#2EFF9D"}]',transformation:{left_rotation:[0.0f,0.0f,0.0f,1.0f],right_rotation:[0.0f,0.0f,0.0f,1.0f],translation:[0.0f,0.0f,0.0f],scale:[1.0f,1.0f,1.0f]}}
+    #Notes:
+    #~ ~ ~ will be replaced by variables based on direction and scale. These determine pixel position.
+    #scale:[0.5f,0.5f,0.5f] will be based on scale float variable, however they are not 1:1 and a formula will be needed.
+    #I am unsure how to choose transformations to get a desired direction. Maybe I'll replace direction with two rotatations, one for left and right, the other for up and down.
+    
 def main():
     logging.debug(f'Running {__name__}')
     
@@ -43,25 +77,20 @@ def main():
     
     try:
         #Convert image into hex array
-        image = image.convert("RGBA")
-        width, height = image.size
-        hex_array = [[None] * width for _ in range(height)]
-        for y in range(height):
-            for x in range(width):
-                pixel = image.getpixel((x, y))
-                r, g, b, a = pixel[:4]
-                if a == 0:
-                    hex_array[y][x] = None
-                else:
-                    hex_value = "#{:02X}{:02X}{:02X}".format(r, g, b)
-                    hex_array[y][x] = hex_value
-        
-        #Test the hex array
-        for y in range(height):
-            row_hex_values = hex_array[y]
-            row_hex_string = ' '.join(str(hex_value) if hex_value is not None else 'None' for hex_value in row_hex_values)
-            print(row_hex_string)
+        hex_array = generateImageHexArray(image)
+    except Exception as e:
+        logging.fatal(f'Something went wrong while converting the image into an array due to {repr(e)}.')
+        exit(1)
     
+    #Test the hex array
+    width, height = image.size
+    for y in range(height):
+        row_hex_values = hex_array[y]
+        row_hex_string = ' '.join(str(hex_value) if hex_value is not None else 'None' for hex_value in row_hex_values)
+        print(row_hex_string)
+    
+    try:
+        generateCommand('North')
     except Exception as e:
         logging.error(f'Could not generate command due to {repr(e)}')
         exit(1)
