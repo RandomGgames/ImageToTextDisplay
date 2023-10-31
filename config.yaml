@@ -1,0 +1,6 @@
+# file: The image to generate a function for
+file: 'image.png'
+
+# scale: The size of the pixels. Either set an exact scaling factor float like 1.0.
+# Note: 1.0 makes the pixels the same size as the 16x16 texture on blocks.
+scale: 1.0
