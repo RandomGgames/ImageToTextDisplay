@@ -11,9 +11,13 @@ Config = TypedDict("Config", {
 })
 
 def loadImage(path: str) -> Image:
+    logging.debug(f'Reading the image file at "{path}".')
     try:
-        return Image.open(path)
+        image = Image.open(path)
+        logging.debug(f'Done reading the image file.')
+        return image
     except Exception as e:
+        logging.debug(f'There was an error reading the image file due to {repr(e)}.')
         raise e
 
 def readYAML(path: str) -> dict:
@@ -24,6 +28,7 @@ def readYAML(path: str) -> dict:
             logging.debug(f'Done reading the YAML file.')
             return data
     except Exception as e:
+        logging.debug(f'There was an error reading the YAML file due to {repr(e)}.')
         raise e
 
 def main():
@@ -60,7 +65,8 @@ if __name__ == '__main__':
             logging.StreamHandler(sys.stdout)
         ]
     )
-    logging.debug('Logging initialized.')
+    logging.debug(f'Running "{os.path.basename(__file__)}"')
+    logging.getLogger('PIL').setLevel(logging.WARNING)
     
     # Call main function
     try:
