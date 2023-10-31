@@ -4,12 +4,6 @@ import sys
 import yaml
 from PIL import Image
 
-from typing import TypedDict
-Config = TypedDict("Config", {
-    "file": str,
-    "scale": float
-})
-
 def loadImage(path: str) -> Image:
     logging.debug(f'Reading the image file at "{path}".')
     try:
@@ -38,13 +32,38 @@ def main():
         Config = readYAML('config.yaml')
         logging.debug(f'{Config = }')
     except Exception as e:
-        logging.fatal(f'The script could not read the config file due to a {repr(e)}')
+        logging.fatal(f'The script could not read the config file due to a {repr(e)}.')
         exit(1)
     
     try:
         image = loadImage(Config['file'])
     except Exception as e:
-        logging.fatal(f'Could not load the configured image file due to {repr(e)}')
+        logging.fatal(f'Could not load the configured image file due to {repr(e)}.')
+        exit(1)
+    
+    try:
+        #Convert image into hex array
+        image = image.convert("RGBA")
+        width, height = image.size
+        hex_array = [[None] * width for _ in range(height)]
+        for y in range(height):
+            for x in range(width):
+                pixel = image.getpixel((x, y))
+                r, g, b, a = pixel[:4]
+                if a == 0:
+                    hex_array[y][x] = None
+                else:
+                    hex_value = "#{:02X}{:02X}{:02X}".format(r, g, b)
+                    hex_array[y][x] = hex_value
+        
+        #Test the hex array
+        for y in range(height):
+            row_hex_values = hex_array[y]
+            row_hex_string = ' '.join(str(hex_value) if hex_value is not None else 'None' for hex_value in row_hex_values)
+            print(row_hex_string)
+    
+    except Exception as e:
+        logging.error(f'Something went wrong while converting the image into an array due to {repr(e)}.')
         exit(1)
     
     logging.info('Done.')
