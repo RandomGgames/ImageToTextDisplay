@@ -47,7 +47,10 @@ def generateImageHexArray(image):
         logging.debug(f'Error occured while generating image hex array.')
         return e
 
-def generateCommand(pos_x: int, pos_y: int, color: str, direction: str, scale: float):
+def generateCommand(pixel_x: int, pixel_y: int, coordinates: str = '~ ~ ~', color: hex = 000000, left_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"], right_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"], translation: list = ["0.0f", "0.0f", "0.0f"], scale: list = ["1.0f", "1.0f", "1.0f"]):
+    text = f'summon text_display {coordinates} {{billboard:"fixed",text:\'{{"text":"■","color":"#{color}"}}\',transformation:{{left_rotation:[{",".join(left_rotation)}],right_rotation:[{",".join(right_rotation)}],translation:[{",".join(translation)}],scale:[{",".join(scale)}]}}}}'
+    return text
+    
     pass
     #Example command I'm using to generate text:
     #/summon text_display 0 50.5 -8 {billboard:"vertical",text:'[{"text":"Your goal is to destroy whatever build is in front of you, but you can only use the TNT you are given!","color":"white"}]',transformation:{left_rotation:[0.0f,0.0f,0.0f,1.0f],right_rotation:[0.0f,0.0f,0.0f,1.0f],translation:[0.0f,0.0f,0.0f],scale:[0.5f,0.5f,0.5f]}}
@@ -60,6 +63,11 @@ def generateCommand(pos_x: int, pos_y: int, color: str, direction: str, scale: f
     #I am unsure how to choose transformations to get a desired direction. Maybe I'll replace direction with two rotatations, one for left and right, the other for up and down.
     
 def main():
+    
+    print(generateCommand())
+    
+    return
+    
     logging.debug(f'Running {__name__}')
     
     try:
