@@ -10,4 +10,4 @@ scale: 0.47
 
 # coordinates: The location the display will be generated at.
 # Can be in any standard form such as ~ ~ ~ , ^ ^ ^, or x y z.
-coordinates: '3 50 0'
+coordinates: '~ ~ ~'
