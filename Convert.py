@@ -11,6 +11,7 @@ def loadImage(path: str) -> Image:
         logging.debug(f'Done reading the image file.')
         return image
     except Exception as e:
+        logging.debug(f'Error occured while reading image file.')
         raise e
 
 def readYAML(path: str) -> dict:
@@ -21,9 +22,10 @@ def readYAML(path: str) -> dict:
             logging.debug(f'Done reading the YAML file.')
             return data
     except Exception as e:
+        logging.debug(f'Error occured while reading YAML file.')
         raise e
 
-def generateImageHexArray(image: Image) -> list:
+def generateImageHexArray(image):
     logging.debug(f'Converting image to hex array...')
     try:
         image = image.convert("RGBA")
@@ -42,16 +44,17 @@ def generateImageHexArray(image: Image) -> list:
         logging.debug(f'Done converting image to hex array.')
         return hex_array
     except Exception as e:
-        raise e
+        logging.debug(f'Error occured while generating image hex array.')
+        return e
 
-def generateCommand(color_hex: hex = '#000000', coordinates: str = '~ ~ ~', scale: list = ["1.0f", "1.0f", "1.0f"], translation: list = ["0.0f", "0.0f", "0.0f"], left_rotation: list = ["0.0", "0.0", "0.0", "1.0"], right_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"]) -> str:
+def generateCommand(pixel_x: int, pixel_y: int, color_hex: hex = '#000000', coordinates: str = '~ ~ ~', scale_transform: list = ["1.0f", "1.0f", "1.0f"], translation_transform: list = ["0.0f", "0.0f", "0.0f"], left_rotation_transform: list = ["0.0", "0.0", "0.0", "1.0"], right_rotation_transform: list = ["0.0f", "0.0f", "0.0f", "1.0f"]):
     logging.debug(f'Generating command...')
     try:
-        left_rotation = f'{",".join(left_rotation)}'
-        right_rotation = f'{",".join(right_rotation)}'
-        translation = f'{",".join(translation)}'
-        scale = f'{",".join(scale)}'
-        nbt = f'{{billboard:"fixed",text:\'{{"text":"■","color":"{color_hex}"}}\',background:0,transformation:{{left_rotation:[{left_rotation}],right_rotation:[{right_rotation}],translation:[{translation}],scale:[{scale}]}}}}'
+        left_rotation_transform = f'{",".join(left_rotation_transform)}'
+        right_rotation_transform = f'{",".join(right_rotation_transform)}'
+        translation_transform = f'{",".join(translation_transform)}'
+        scale_transform = f'{",".join(scale_transform)}'
+        nbt = f'{{billboard:"fixed",text:\'{{"text":"■","color":"{color_hex}"}}\',background:0,transformation:{{left_rotation:[{left_rotation_transform}],right_rotation:[{right_rotation_transform}],translation:[{translation_transform}],scale:[{scale_transform}]}}}}'
         command = f'summon minecraft:text_display {coordinates} {nbt}'
         logging.debug(f'Generated command.')
         return command
@@ -64,26 +67,18 @@ def generateCommands(width: int, height: int, hex_array: list, scale: float) -> 
         commands = []
         for y in range(height):
             for x in range(width):
-                logging.debug(f'Generating command for ({x}, {height - y})')
-                if hex_array[y][x] != None:
-                    translation = [
+                color = hex_array[y][x]
+                if color != None:
+                    translation_transform = [
                         f"{0.125 * x * scale}f",
                         f"{0.125 * (height - y) * scale}f",
-                        "0.0f"
-                    ]
-                    scale = [
+                        "0.0f"]
+                    scale_transform = [
                         f"{scale}f",
                         f"{scale}f",
-                        f"{scale}f"
-                    ]
-                    logging.debug(f'{x = }')
-                    logging.debug(f'{y = }')
-                    logging.debug(f'{hex_array[y][x] = }')
-                    logging.debug(f'{scale = }')
-                    logging.debug(f'{translation = }')
-                    command = generateCommand(color_hex=hex_array[y][x], scale=scale, translation=translation)
+                        f"{scale}f"]
+                    command = generateCommand(x, y, color_hex = color, scale_transform = scale_transform, translation_transform = translation_transform)
                     commands.append(command)
-        logging.debug(f'Done generating commands.')
         return commands
     except Exception as e:
         raise e
@@ -99,7 +94,7 @@ def main():
         exit(1)
     
     try:
-        image = loadImage(config['file'])
+        image = loadImage(config['image_file'])
         width, height = image.size
     except Exception as e:
         logging.fatal(f'Could not load the configured image file due to {repr(e)}.')
@@ -112,27 +107,15 @@ def main():
         logging.fatal(f'Something went wrong while converting the image into an array due to {repr(e)}.')
         exit(1)
     
-    
-    ##Test the hex array
-    #for y in range(height):
-    #    row_hex_values = hex_array[y]
-    #    row_hex_string = ' '.join(str(hex_value) if hex_value is not None else 'None' for hex_value in row_hex_values)
-    #    print(row_hex_string)
-    
-
     try:
-        generateCommand()
+        commands = generateCommands(width, height, hex_array, config['scale'])
     except Exception as e:
-        logging.error(f'Could not generate command due to {repr(e)}')
+        logging.fatal(f'An error occured while generating summon commands due to {repr(e)}')
         exit(1)
     
-    #try:
-    #    logging.debug(f'{width = }')
-    #    logging.debug(f'{height = }')
-    #    logging.debug(f'{config["scale"] = }')
-    #    commands = generateCommands(width, height, hex_array, config['scale'])
-    #except Exception as e:
-    #    logging.fatal(f'An error occured while generating the list of commands due to {repr(e)}')
+    with open('summon_text_display.mcfunction', 'w', encoding = 'utf-8') as f:
+        for string in commands:
+            f.write(string + '\n')
     
     logging.info('Done.')
 
