@@ -6,7 +6,7 @@ output_file: 'C:\Users\giano\AppData\Roaming\.minecraft\saves\Data Packs\datapac
 
 # scale: The size of the pixels. Either set an exact scaling factor float like 1.0.
 # Note: 1.0 makes the pixels the same size as the 16x16 texture on blocks.
-scale: 0.75
+scale: 0.47
 
 # coordinates: The location the display will be generated at.
 # Can be in any standard form such as ~ ~ ~ , ^ ^ ^, or x y z.
