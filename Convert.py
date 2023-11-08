@@ -11,7 +11,6 @@ def loadImage(path: str) -> Image:
         logging.debug(f'Done reading the image file.')
         return image
     except Exception as e:
-        logging.debug(f'Error occured while reading image file.')
         raise e
 
 def readYAML(path: str) -> dict:
@@ -22,10 +21,9 @@ def readYAML(path: str) -> dict:
             logging.debug(f'Done reading the YAML file.')
             return data
     except Exception as e:
-        logging.debug(f'Error occured while reading YAML file.')
         raise e
 
-def generateImageHexArray(image):
+def generateImageHexArray(image: Image) -> list:
     logging.debug(f'Converting image to hex array...')
     try:
         image = image.convert("RGBA")
@@ -44,33 +42,65 @@ def generateImageHexArray(image):
         logging.debug(f'Done converting image to hex array.')
         return hex_array
     except Exception as e:
-        logging.debug(f'Error occured while generating image hex array.')
-        return e
+        raise e
 
-def generateCommand(pixel_x: int, pixel_y: int, color_hex: hex = '#000000', coordinates: str = '~ ~ ~', left_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"], right_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"], translation: list = ["0.0f", "0.0f", "0.0f"], scale: list = ["1.0f", "1.0f", "1.0f"]):
+def generateCommand(color_hex: hex = '#000000', coordinates: str = '~ ~ ~', scale: list = ["1.0f", "1.0f", "1.0f"], translation: list = ["0.0f", "0.0f", "0.0f"], left_rotation: list = ["0.0", "0.0", "0.0", "1.0"], right_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"]) -> str:
     logging.debug(f'Generating command...')
-    left_rotation = f'{",".join(left_rotation)}'
-    right_rotation = f'{",".join(right_rotation)}'
-    translation = f'{",".join(translation)}'
-    scale = f'{",".join(scale)}'
-    nbt = f'{{billboard:"fixed",text:\'{{"text":"■","color":"{color_hex}"}}\',background:0,transformation:{{left_rotation:[{left_rotation}],right_rotation:[{right_rotation}],translation:[{translation}],scale:[{scale}]}}}}'
-    command = f'summon minecraft:text_display {coordinates} {nbt}'
-    
-    logging.debug(f'Generated command.')
-    return command
+    try:
+        left_rotation = f'{",".join(left_rotation)}'
+        right_rotation = f'{",".join(right_rotation)}'
+        translation = f'{",".join(translation)}'
+        scale = f'{",".join(scale)}'
+        nbt = f'{{billboard:"fixed",text:\'{{"text":"■","color":"{color_hex}"}}\',background:0,transformation:{{left_rotation:[{left_rotation}],right_rotation:[{right_rotation}],translation:[{translation}],scale:[{scale}]}}}}'
+        command = f'summon minecraft:text_display {coordinates} {nbt}'
+        logging.debug(f'Generated command.')
+        return command
+    except Exception as e:
+        raise e
+
+def generateCommands(width: int, height: int, hex_array: list, scale: float) -> list:
+    logging.debug(f'Generating commands...')
+    try:
+        commands = []
+        for y in range(height):
+            for x in range(width):
+                logging.debug(f'Generating command for ({x}, {height - y})')
+                if hex_array[y][x] != None:
+                    translation = [
+                        f"{0.125 * x * scale}f",
+                        f"{0.125 * (height - y) * scale}f",
+                        "0.0f"
+                    ]
+                    scale = [
+                        f"{scale}f",
+                        f"{scale}f",
+                        f"{scale}f"
+                    ]
+                    logging.debug(f'{x = }')
+                    logging.debug(f'{y = }')
+                    logging.debug(f'{hex_array[y][x] = }')
+                    logging.debug(f'{scale = }')
+                    logging.debug(f'{translation = }')
+                    command = generateCommand(color_hex=hex_array[y][x], scale=scale, translation=translation)
+                    commands.append(command)
+        logging.debug(f'Done generating commands.')
+        return commands
+    except Exception as e:
+        raise e
 
 def main():
     logging.debug(f'Running {__name__}')
     
     try:
-        Config = readYAML('config.yaml')
-        logging.debug(f'{Config = }')
+        config = readYAML('config.yaml')
+        logging.debug(f'{config = }')
     except Exception as e:
         logging.fatal(f'The script could not read the config file due to a {repr(e)}.')
         exit(1)
     
     try:
-        image = loadImage(Config['file'])
+        image = loadImage(config['file'])
+        width, height = image.size
     except Exception as e:
         logging.fatal(f'Could not load the configured image file due to {repr(e)}.')
         exit(1)
@@ -82,18 +112,27 @@ def main():
         logging.fatal(f'Something went wrong while converting the image into an array due to {repr(e)}.')
         exit(1)
     
-    #Test the hex array
-    width, height = image.size
-    for y in range(height):
-        row_hex_values = hex_array[y]
-        row_hex_string = ' '.join(str(hex_value) if hex_value is not None else 'None' for hex_value in row_hex_values)
-        print(row_hex_string)
     
+    ##Test the hex array
+    #for y in range(height):
+    #    row_hex_values = hex_array[y]
+    #    row_hex_string = ' '.join(str(hex_value) if hex_value is not None else 'None' for hex_value in row_hex_values)
+    #    print(row_hex_string)
+    
+
     try:
         generateCommand()
     except Exception as e:
         logging.error(f'Could not generate command due to {repr(e)}')
         exit(1)
+    
+    #try:
+    #    logging.debug(f'{width = }')
+    #    logging.debug(f'{height = }')
+    #    logging.debug(f'{config["scale"] = }')
+    #    commands = generateCommands(width, height, hex_array, config['scale'])
+    #except Exception as e:
+    #    logging.fatal(f'An error occured while generating the list of commands due to {repr(e)}')
     
     logging.info('Done.')
 
@@ -104,7 +143,7 @@ if __name__ == '__main__':
     
     # Set up logging
     logging.basicConfig(
-        level = logging.INFO,
+        level = logging.DEBUG,
         format = '%(asctime)s.%(msecs)03d %(levelname)s: %(message)s',
         datefmt = '%Y/%m/%d %H:%M:%S',
         encoding = 'utf-8',
