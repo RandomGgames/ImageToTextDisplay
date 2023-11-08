@@ -1,10 +1,9 @@
-# file: The image to generate a function for
-file: 'test_images/randomggames.png'
+# image_file: The image to generate a function for
+image_file: 'test_images/bottom_right_corner.png'
+
+# output_file: The file that the summon commands will be put into
+output_file: 'C:\Users\giano\AppData\Roaming\.minecraft\saves\Data Packs\datapacks\minecraft\data\minecraft\functions\text_displays\summon.mcfunction'
 
 # scale: The size of the pixels. Either set an exact scaling factor float like 1.0.
 # Note: 1.0 makes the pixels the same size as the 16x16 texture on blocks.
-scale: 0.1
-
-# direction: The direction the image will be looked at from. This determines how the image generates.
-# Available options: North, South, East, West
-direction: North
+scale: 1
