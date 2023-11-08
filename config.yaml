@@ -3,7 +3,7 @@ file: 'test_images/randomggames.png'
 
 # scale: The size of the pixels. Either set an exact scaling factor float like 1.0.
 # Note: 1.0 makes the pixels the same size as the 16x16 texture on blocks.
-scale: 1.0
+scale: 0.1
 
 # direction: The direction the image will be looked at from. This determines how the image generates.
 # Available options: North, South, East, West
