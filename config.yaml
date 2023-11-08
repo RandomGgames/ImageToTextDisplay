@@ -2,7 +2,7 @@
 image_file: 'test_images/randomggames.png'
 
 # output_file: The file that the summon commands will be put into
-output_file: 'C:\Users\giano\AppData\Roaming\.minecraft\saves\Data Packs\datapacks\minecraft\data\minecraft\functions\text_displays\summon.mcfunction'
+output_file: 'summon_text_display.mcfunction'
 
 # scale: The size of the pixels. Either set an exact scaling factor float like 1.0.
 # Note: 1.0 makes the pixels the same size as the 16x16 texture on blocks.
