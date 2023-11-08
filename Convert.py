@@ -39,7 +39,7 @@ def generateImageHexArray(image):
                 if a == 0:
                     hex_array[y][x] = None
                 else:
-                    hex_value = "#{:02X}{:02X}{:02X}".format(r, g, b)
+                    hex_value = '#{:02X}{:02X}{:02X}'.format(r, g, b)
                     hex_array[y][x] = hex_value
         logging.debug(f'Done converting image to hex array.')
         return hex_array
@@ -47,27 +47,19 @@ def generateImageHexArray(image):
         logging.debug(f'Error occured while generating image hex array.')
         return e
 
-def generateCommand(pixel_x: int, pixel_y: int, coordinates: str = '~ ~ ~', color: hex = 000000, left_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"], right_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"], translation: list = ["0.0f", "0.0f", "0.0f"], scale: list = ["1.0f", "1.0f", "1.0f"]):
-    text = f'summon text_display {coordinates} {{billboard:"fixed",text:\'{{"text":"■","color":"#{color}"}}\',transformation:{{left_rotation:[{",".join(left_rotation)}],right_rotation:[{",".join(right_rotation)}],translation:[{",".join(translation)}],scale:[{",".join(scale)}]}}}}'
-    return text
+def generateCommand(pixel_x: int, pixel_y: int, color_hex: hex = '#000000', coordinates: str = '~ ~ ~', left_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"], right_rotation: list = ["0.0f", "0.0f", "0.0f", "1.0f"], translation: list = ["0.0f", "0.0f", "0.0f"], scale: list = ["1.0f", "1.0f", "1.0f"]):
+    logging.debug(f'Generating command...')
+    left_rotation = f'{",".join(left_rotation)}'
+    right_rotation = f'{",".join(right_rotation)}'
+    translation = f'{",".join(translation)}'
+    scale = f'{",".join(scale)}'
+    nbt = f'{{billboard:"fixed",text:\'{{"text":"■","color":"{color_hex}"}}\',background:0,transformation:{{left_rotation:[{left_rotation}],right_rotation:[{right_rotation}],translation:[{translation}],scale:[{scale}]}}}}'
+    command = f'summon minecraft:text_display {coordinates} {nbt}'
     
-    pass
-    #Example command I'm using to generate text:
-    #/summon text_display 0 50.5 -8 {billboard:"vertical",text:'[{"text":"Your goal is to destroy whatever build is in front of you, but you can only use the TNT you are given!","color":"white"}]',transformation:{left_rotation:[0.0f,0.0f,0.0f,1.0f],right_rotation:[0.0f,0.0f,0.0f,1.0f],translation:[0.0f,0.0f,0.0f],scale:[0.5f,0.5f,0.5f]}}
-    
-    #How the command should look roughly
-    #/summon text_display ~ ~ ~ {billboard:"fixed",text:text:'[{"text":"■","color":"#2EFF9D"}]',transformation:{left_rotation:[0.0f,0.0f,0.0f,1.0f],right_rotation:[0.0f,0.0f,0.0f,1.0f],translation:[0.0f,0.0f,0.0f],scale:[1.0f,1.0f,1.0f]}}
-    #Notes:
-    #~ ~ ~ will be replaced by variables based on direction and scale. These determine pixel position.
-    #scale:[0.5f,0.5f,0.5f] will be based on scale float variable, however they are not 1:1 and a formula will be needed.
-    #I am unsure how to choose transformations to get a desired direction. Maybe I'll replace direction with two rotatations, one for left and right, the other for up and down.
-    
+    logging.debug(f'Generated command.')
+    return command
+
 def main():
-    
-    print(generateCommand())
-    
-    return
-    
     logging.debug(f'Running {__name__}')
     
     try:
@@ -98,7 +90,7 @@ def main():
         print(row_hex_string)
     
     try:
-        generateCommand('North')
+        generateCommand()
     except Exception as e:
         logging.error(f'Could not generate command due to {repr(e)}')
         exit(1)
@@ -112,7 +104,7 @@ if __name__ == '__main__':
     
     # Set up logging
     logging.basicConfig(
-        level = logging.DEBUG,
+        level = logging.INFO,
         format = '%(asctime)s.%(msecs)03d %(levelname)s: %(message)s',
         datefmt = '%Y/%m/%d %H:%M:%S',
         encoding = 'utf-8',
