@@ -78,8 +78,8 @@ def generateCommands(width: int, height: int, hex_array: list, scale: float, coo
                 color = hex_array[y][x]
                 if color != None:
                     translation_transform = [
-                        f"{(0.125 * scale * x) - (0.125 * scale * width)/2 + (0.125 * scale)/2.5}f",
-                        f"{(0.125 * scale * (height - y)) - (0.125 * scale * 1.875) + (0.125 * scale * 0.08)}f",
+                        f"{round( (0.125 * scale * x) - (0.125 * scale * width)/2 + (0.125 * scale)/2.5,             6)}f",
+                        f"{round( (0.125 * scale * (height - y)) - (0.125 * scale * 1.875) + (0.125 * scale * 0.08), 6)}f",
                         "0.0f"]
                     scale_transform = [
                         f"{scale}f",
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     
     # Set up logging
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format='%(asctime)s.%(msecs)03d %(levelname)s: %(message)s',
         datefmt='%Y/%m/%d %H:%M:%S',
         encoding='utf-8',
