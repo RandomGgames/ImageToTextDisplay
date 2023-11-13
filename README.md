@@ -18,6 +18,3 @@ This python script relies on the yaml lib for the config file. `pip install pyya
 Please submit any pull requests to the DEV branch, as this is the WIP/testing branch.
 
 This is a python script that reads image files and generates a function that creates the image in minecraft using text display entities and the ■ character (ALT+254).
-
-### Pull Requests
-Please submit pull requests primarily to the DEV branch, as this is the WIP/testing branch.
