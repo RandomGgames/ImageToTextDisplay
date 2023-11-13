@@ -104,7 +104,7 @@ def main():
     except Exception as e:
         logging.fatal(
             f'The script could not read the config file due to a {repr(e)}.')
-        exit(1)
+        raise e
     
     try:
         image = loadImage(image_location)
@@ -112,7 +112,7 @@ def main():
     except Exception as e:
         logging.fatal(
             f'Could not load the configured image file due to {repr(e)}.')
-        exit(1)
+        raise e
     
     try:
         # Convert image into hex array
@@ -120,15 +120,14 @@ def main():
     except Exception as e:
         logging.fatal(
             f'Something went wrong while converting the image into an array due to {repr(e)}.')
-        exit(1)
+        raise e
     
     try:
         commands = generateCommands(
             width=width, height=height, hex_array=hex_array, scale=scale, coordinates=coordinates)
     except Exception as e:
-        logging.fatal(
-            f'An error occured while generating summon commands due to {repr(e)}')
-        exit(1)
+        logging.fatal(f'An error occured while generating summon commands due to {repr(e)}')
+        raise e
     
     with open(output_file, 'w', encoding='utf-8') as f:
         for string in commands:
@@ -155,10 +154,10 @@ if __name__ == '__main__':
     logging.debug(f'Running "{os.path.basename(__file__)}"')
     logging.getLogger('PIL').setLevel(logging.WARNING)
     
-    # Call main function
     try:
         main()
     except Exception as e:
         logging.error(e)
-        input(f'The script could no longer continue to function due to the error described above. Please fix the issue described or go to https://github.com/RandomGgames/RMMUD to request help/report a bug')
+        logging.debug(f'The script could no longer continue to function due to the error described above. Please fix the issue described or go to https://github.com/RandomGgames/ImageToTextDisplay to request help/report a bug')
+        input('Press {Enter} to exit.')
         exit(1)
