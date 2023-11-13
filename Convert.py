@@ -78,7 +78,7 @@ def generateCommands(width: int, height: int, hex_array: list, scale: float, coo
                 color = hex_array[y][x]
                 if color != None:
                     translation_transform = [
-                        f"{round( (0.125 * scale * x) - (0.125 * scale * width)/2 + (0.125 * scale)/2.5,             6)}f",
+                        f"{round( (0.125 * scale * x) - (0.125 * scale * width)/2 + (0.125 * scale)/2.5, 6)}f",
                         f"{round( (0.125 * scale * (height - y)) - (0.125 * scale * 1.875) + (0.125 * scale * 0.08), 6)}f",
                         "0.0f"]
                     scale_transform = [
@@ -102,29 +102,25 @@ def main():
         coordinates = config['coordinates']
         logging.debug(f'{config = }')
     except Exception as e:
-        logging.fatal(
-            f'The script could not read the config file due to a {repr(e)}.')
+        logging.fatal(f'The script could not read the config file due to a {repr(e)}.')
         raise e
     
     try:
         image = loadImage(image_location)
         width, height = image.size
     except Exception as e:
-        logging.fatal(
-            f'Could not load the configured image file due to {repr(e)}.')
+        logging.fatal(f'Could not load the configured image file due to {repr(e)}.')
         raise e
     
     try:
         # Convert image into hex array
         hex_array = generateImageHexArray(image)
     except Exception as e:
-        logging.fatal(
-            f'Something went wrong while converting the image into an array due to {repr(e)}.')
+        logging.fatal(f'Something went wrong while converting the image into an array due to {repr(e)}.')
         raise e
     
     try:
-        commands = generateCommands(
-            width=width, height=height, hex_array=hex_array, scale=scale, coordinates=coordinates)
+        commands = generateCommands(width=width, height=height, hex_array=hex_array, scale=scale, coordinates=coordinates)
     except Exception as e:
         logging.fatal(f'An error occured while generating summon commands due to {repr(e)}')
         raise e
