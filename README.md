@@ -13,8 +13,3 @@ This python script relies on the yaml lib for the config file. `pip install pyya
 1. Set the `image_file` to the path of the image you want to generate.
 2. Set the `output_file` to the path of the .mcfunction file that will be generated, containing the list of summon commands.
 3. Run the `Convert.py` script , place your `output_file` into a datapack, and run the function.
-
-## Want to contribute?
-Please submit any pull requests to the DEV branch, as this is the WIP/testing branch.
-
-This is a python script that reads image files and generates a function that creates the image in minecraft using text display entities and the ■ character (ALT+254).
