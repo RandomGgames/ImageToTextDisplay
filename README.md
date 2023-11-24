@@ -4,6 +4,8 @@ This is a python script that reads image files and generates a function that cre
 
 Please note, each pixel in the image will be its own entity in game, so the higher the resolution, the more entities that will be summoned. A 10x10 image will have 100 text_display entities summoned for example!
 
+![image](https://github.com/RandomGgames/ImageToTextDisplay/assets/17207260/d916a850-666f-4741-9495-dc54fd79cc9e)
+
 ## How to use it
 
 ### Requirements
