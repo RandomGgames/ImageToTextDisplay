@@ -1,6 +1,6 @@
 # Image to Text Display
 
-This is a python script that reads image files and generates a function that creates the image in minecraft using text display entities and a colored ■ character (ALT+254).
+This is a python script that reads image files and generates a function that creates the image in minecraft using text display entities and a colored ■ characters (ALT+254).
 
 Please note, each pixel in the image will be its own entity in game, so the higher the resolution, the more entities that will be summoned. A 10x10 image will have 100 text_display entities summoned for example!
 
